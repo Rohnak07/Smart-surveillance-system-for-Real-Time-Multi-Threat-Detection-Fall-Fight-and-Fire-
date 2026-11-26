@@ -2,4 +2,4 @@ Fire and smoke dataset (D-Fire): https://github.com/gaia-solutions-on-demand/DFi
 Violence dataset (optional CNN): https://www.kaggle.com/datasets/tahasajjad/real-life-violence-dataset
 Fall detection (evaluation): UR Fall Detection Dataset, Le2i Fall Detection Dataset
 Fight detection (evaluation): RWF-2000, Hockey Fights
-Source project: https://github.com/naimurhamim/ai-driven-autonomous-aerial-surveillance-multi-threat-detection-public-safety-monitoring
+Source project: https://github.com/Rohnak07/Smart-surveillance-system-for-Real-Time-Multi-Threat-Detection-Fall-Fight-and-Fire-.git
