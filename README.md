@@ -2,7 +2,7 @@
 
 Smart surveillance system for Real-Time Multi-Threat Detection (Fall, Fight, and Fire) analyzes one webcam, IP Webcam phone feed, or video file at a time. It displays and logs camera-based fire, fall, possible medical-emergency, and fight alerts for human review. Alerts are not diagnoses or proof that an event occurred.
 
-> **Credit:** The project idea, evidence/Telegram flow, and violence-CNN checkpoint format are based on [AI-Driven Autonomous Aerial Surveillance](https://github.com/naimurhamim/ai-driven-autonomous-aerial-surveillance) by MD Naimur Hamim, Redwan Bin Jalal, and Md. Ashiqussalehin, under the MIT license (see LICENSE). The project retains a subset of the original fire/violence work, reimplements the fixed-camera logic, and adds fall detection. Drone, accident, and weapon modules were removed.
+> **Credit:** The project idea, evidence/Telegram flow, and violence-CNN checkpoint format are based on [AI-Driven Autonomous Aerial Surveillance](https://github.com/Rohnak07/Smart-surveillance-system-for-Real-Time-Multi-Threat-Detection-Fall-Fight-and-Fire-.git) by Rohnak Kumar Singh, under the MIT license (see LICENSE). The project retains a subset of the original fire/violence work, reimplements the fixed-camera logic, and adds fall detection. Drone, accident, and weapon modules were removed.
 
 ## Detection methods
 
