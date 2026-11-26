@@ -1,0 +1,17 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+runs/
+*.log
+videos/
+*.mp4
+*.avi
+data/evidence/*
+data/events/*
+!data/evidence/.gitkeep
+!data/events/.gitkeep
+results/
+violence_raw/
+violence_split/

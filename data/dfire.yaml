@@ -1,0 +1,8 @@
+# D-Fire dataset (classes: 0 smoke, 1 fire). Point `path` at your local copy.
+path: ../DFireDataset
+train: train/images
+val: val/images
+test: test/images
+names:
+  0: smoke
+  1: fire

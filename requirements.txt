@@ -1,0 +1,9 @@
+ultralytics>=8.3
+opencv-python>=4.8
+numpy>=1.24
+PyYAML>=6.0
+requests>=2.31
+python-dotenv>=1.0
+# torch / torchvision are installed automatically with ultralytics (needed for pose + optional CNN)
+# dev / tests:
+pytest>=7.0

@@ -1,0 +1,109 @@
+# Smart surveillance system for Real-Time Multi-Threat Detection (Fall, Fight, and Fire) configuration. All durations are in SECONDS (not frames), so behaviour
+# stays the same at 5 FPS (phone feed) and 30 FPS (webcam / video file).
+
+camera:
+  id: "CAM-01"
+  location: "Main Hall"
+  source: "0"              # laptop webcam; use run_phone.py for phone auto-discovery
+  rotate: 0               # 0, 90, 180, 270 (clockwise); run_phone.py uses 90 for portrait phones
+  max_width: 640          # downscale wide feeds before detection (CPU speed)
+
+pose:
+  model: "yolo11n-pose.pt"   # also works with yolov8n-pose.pt
+  imgsz: 416                 # smaller CPU input; people still need to be clearly visible
+  conf: 0.30
+  device: "cpu"              # "cpu" or "0" for GPU
+  min_box_h_frac: 0.06       # admit smaller people in wide group scenes; pose quality still limits detection
+
+tracker:
+  max_age_s: 2.0
+
+fall:
+  enabled: true
+  upright_angle_deg: 35      # torso angle from vertical below this => upright
+  lying_angle_deg: 60        # torso angle above this (and wide box) => lying
+  lying_min_aspect: 0.75     # box width/height needed with torso angle to call it lying
+  lying_aspect_no_torso: 1.1 # box-only fallback when torso keypoints are hidden
+  lying_debounce_s: 0.0      # start timing as soon as pose/box says lying
+  max_transition_s: 1.0      # upright -> lying must happen within this time to be a FALL
+  min_height_drop: 0.30      # box height must shrink by this fraction (or centre drop below)
+  confirm_lying_s: 0.20      # immediate FALL after 0.2s lying confirmation
+  person_down_s: 5.0         # backward-compatible fallback for medical_still_s
+  medical_still_s: 5.0       # no detected movement for this long triggers a possible medical emergency
+  medical_motion_frac: 0.02  # keypoint movement above 2% of body height resets stillness
+  medical_motion_min_px: 4.0 # minimum movement threshold to ignore pose jitter
+  medical_min_kpt_conf: 0.30
+  medical_min_visible_points: 3
+  medical_min_visible_groups: 2 # head, arms, legs; allow one group to be occluded
+  medical_max_gap_s: 0.75    # lost pose continuity restarts the stillness timer
+  medical_visual_hold_s: 6.0 # track camera motion near a confirmed fall during pose loss
+  report_person_down: true
+  recover_s: 1.0             # upright this long resets the fall latch
+  missing_hold_s: 0.8        # clear the alert after pose loss without a matching live image
+
+fight:
+  enabled: true
+  strike_speed: 1.8          # wrist speed relative to shoulders, in body-heights / second
+  max_speed: 14.0            # faster than this is keypoint jitter, ignored
+  contact_margin: 0.25       # target box is expanded by this fraction for contact test
+  strike_refractory_s: 0.25  # one wrist counts at most one strike per this time
+  window_s: 4.0
+  alert_score: 2.0           # two separate impacts from one person-pair; one greeting is not enough
+  group_alert_score: 3.0     # three impacts connected across a multi-person fight
+  min_people: 2
+  alert_clear_s: 4.0         # keep a confirmed fight banner active across the strike window
+
+violence_cnn:                # OPTIONAL second opinion (needs your trained checkpoint)
+  enabled: false
+  model: "models/violence_v1.pt"
+  sample_every_s: 0.25
+  threshold: 0.85
+  window_s: 2.0
+
+fire:
+  enabled: true
+  mode: "auto"               # auto = YOLO if models/fire_smoke.pt exists, else heuristic
+  yolo_model: "models/fire_smoke.pt"
+  yolo_conf: 0.40
+  yolo_confirm_s: 1.0       # faster confirmation; still requires 3 model hits
+  yolo_min_hits: 3
+  # heuristic (colour + flicker) settings
+  min_area_frac: 0.0004      # allow small flames in portrait phone feeds
+  max_area_frac: 0.45        # bigger than this = orange wall/sunset, ignore
+  min_saturation: 150        # saturation required for the orange fringe
+  min_flame_hue: 4           # keep saturated orange/yellow flame colours
+  max_flame_hue: 35
+  min_red_green_delta: 40    # orange fringe should be distinctly redder than green
+  camera_motion_max: 12.0    # suppress flicker cues while the camera is moving
+  person_box_pad_frac: 0.05  # ignore heuristic fire-colour pixels on detected people
+  min_flame_aspect: 0.28     # discard very thin wires
+  max_flame_aspect: 1.30     # flame candidates should be taller than they are wide
+  max_top_base_width_ratio: 0.95 # flame silhouette should narrow toward its tip
+  min_yellow_core_frac: 0.08 # red/orange objects without a bright core are rejected
+  min_yellow_core_pixels: 6
+  min_yellow_core_green: 115
+  min_yellow_core_green_red_ratio: 0.62
+  max_core_offset_frac: 0.30 # bright core should sit near flame center
+  motion_window_s: 1.10
+  min_motion_samples: 4
+  min_motion_span_s: 0.2
+  min_tip_motion_frac: 0.035 # flame tip must move vertically within the window
+  min_vertical_step_frac: 0.006 # accept smaller up/down tip changes between frames
+  min_shape_variation: 0.08  # real flames can change height by less than 12% per window
+  max_base_motion_frac: 0.15 # reject rigid objects moving as a whole
+  shape_gap_s: 0.50
+  min_churn: 0.01            # motion gates below reject static objects after this light flicker gate
+  confirm_s: 0.75           # includes three samples at 3 FPS
+  confirm_ratio: 0.55        # require the fire cue on a majority of recent frames
+  alert_clear_s: 1.25        # keep fire alert active across brief detection flicker
+
+alerts:
+  cooldown_s: 15
+  save_evidence: true
+  siren_enabled: true        # play a repeating laptop siren for medical emergencies
+  fire_sound_enabled: true  # loop the fire alarm only while fire is detected
+  fire_sound_path: "assets/emergency_alert.mp3"
+  csv_path: "data/events/events.csv"
+  evidence_dir: "data/evidence"
+  telegram:
+    enabled: false           # set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env
